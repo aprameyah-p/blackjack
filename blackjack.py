@@ -10,47 +10,39 @@ print(chr(0x1f0a1))
 
 
 import time
-import math
 import random
-
-AlreadyPulled=[]
+import sys
 
 suits=["D","H","C","S"]
-ranks=['A','2','3','4','5','6','7','8','9','10','K','Q','J']
-card_list=[]
+ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K']
 
-def CardShuffle():
-
+def card_deck():
+    all_card_list=[]
     for suit in suits:
         for rank in ranks:
-            card_list.append([suit,rank])
+            all_card_list.append([suit,rank])
+    random.shuffle(all_card_list)
+    return all_card_list
 
-    random.shuffle(card_list)
-    new_card=card_list.pop()
-    return new_card
+def draw_card(deck):
+    return deck.pop()
+
 
 
 def CardValue(CardList):
     card_value=0
-    a_flag=False
-    a_is_one_flag=False
+    a_count=0
     for Card in CardList:
         if Card[1] in "23456789" or Card[1]=="10":
             card_value+=int(Card[1])
         elif Card[1] == "A":
-            a_flag=True
-            if card_value>21:
-                card_value+=1
-                a_is_one_flag=True
-            else:
-                card_value+=11
-                a_is_one_flag=False
+            a_count+=1
+            card_value+=1
         else:
             card_value+=10
-    if card_value>21:
-        if a_flag:
-            if not a_is_one_flag:
-                card_value-=10
+    if a_count and card_value+10<=21:
+        card_value+=10
+
     return card_value
 
 
@@ -60,18 +52,44 @@ def BlackJack():
         3) ask the player if they wanna twist/stick
         4) ez
     '''
+    player_bust=False
+    dealer_bust=False
+    player_blackjack=False
+    dealer_blackjack=False
+    deck=card_deck()
 
-    DealerCards=[CardShuffle(),CardShuffle()]
+    DealerCards=[draw_card(deck),draw_card(deck)]
     print("Dealers Cards are:")
     print(DealerCards[0])
     time.sleep(1.5)
-    print(DealerCards[1])
-    time.sleep(1)
-    PlayerCards=[CardShuffle(),CardShuffle()]
+    PlayerCards=[draw_card(deck),draw_card(deck)]
     print("Your Cards are:")
     print(PlayerCards[0])
     time.sleep(1.5)
     print(PlayerCards[1])
+    print("The Value of your cards is:", CardValue(PlayerCards))
+
+
+    # check for blackjack
+    if CardValue(PlayerCards)==21:
+        player_blackjack=True
+    if CardValue(DealerCards)==21:
+        dealer_blackjack=True
+
+    if player_blackjack or dealer_blackjack:
+        print("Dealer's Second Card is:")
+        print(DealerCards[1])
+        time.sleep(1)
+        
+    if player_blackjack and dealer_blackjack:
+        print("Both have Blackjacks! Tie!")
+        return
+    elif player_blackjack:
+        print("Blackjack! You Win!")
+        return
+    elif dealer_blackjack:
+        print("Dealer gets Blackjack! Dealer Wins!")
+        return
 
     while True:
         print("Do you want to Twist or Stick (T/S): ",end="")
@@ -81,33 +99,67 @@ def BlackJack():
                 break
         # Case 1: Twist, draw 1 more card, may bust, may win, make function
         if twist_stick_choice.upper() == "T":
-            PlayerCards.append(CardShuffle())
+            PlayerCards.append(draw_card(deck))
             print(PlayerCards[-1])
-            print("The Value of your cards is:", CardValue(PlayerCards))
             if CardValue(PlayerCards)>21:
                 print("Bust!")
+                player_bust=True
                 break
+            elif CardValue(PlayerCards)==21:
+                print("You hit 21!")
+                break
+            else:
+                print("The Value of your cards is:", CardValue(PlayerCards))
         else:
+            
+            break
+
+
+
+    print("Dealer's Second Card is:")
+    print(DealerCards[1])
+    time.sleep(1)
+
+
+    if CardValue(DealerCards)<17 and player_bust==False:
+        print("The Dealer Draws:")
+    while CardValue(DealerCards)<17 and player_bust==False:
+        DealerCards.append(draw_card(deck))
+        print(DealerCards[-1])
+        if CardValue(DealerCards)>21:
+            print("Dealer Bust!")
+            dealer_bust=True
             break
 
     print("The Value of the dealers cards is:", CardValue(DealerCards))
     print("The Value of your cards is:", CardValue(PlayerCards))
 
+
+    if player_bust:
+        print("Dealer Wins!")
+    elif dealer_bust:
+        print("Player Wins!")
+    elif CardValue(DealerCards)>CardValue(PlayerCards):
+        print("Dealer Wins!")
+    elif CardValue(DealerCards)==CardValue(PlayerCards):
+        print("Tie!")
+    else:
+        print("Player Wins!")
+
+
+def menu():
     while True:
-        if CardValue(DealerCards)>CardValue(PlayerCards):
-            print("Dealer Wins!")
-            break
-        elif CardValue(DealerCards)==CardValue(PlayerCards) and CardValue(DealerCards)>17:
-            print("Tie!")
-            break
-        elif CardValue(DealerCards)==CardValue(PlayerCards) and CardValue(DealerCards)<17:
-            DealerCards.append(CardShuffle())
-        else:
-            print("Player Wins!")
+        print("1. Play Blackjack")
+        print("2. Exit")
+        menu_input=input("enter your choice:")
+        if menu_input=="1":
+            BlackJack()
+        elif menu_input=="2":
+            sys.exit()
 
 
 if __name__ == "__main__":
-    BlackJack()
+    menu()
 
 
 
