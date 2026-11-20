@@ -1,9 +1,3 @@
-'''for i in range (0x2500,0x256f):
-    print(chr(i), end=" ")
-print()
-
-print(chr(0x2660))
-print(chr(0x1f0a1))
 
 ## Diamonds, Hearts, Clubs, Spades
 ##. D(1-13), H(14-26), C(27-39), S(40-52)'''
@@ -11,7 +5,6 @@ print(chr(0x1f0a1))
 
 import time
 import random
-import sys
 
 suits=["D","H","C","S"]
 ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K']
@@ -27,6 +20,25 @@ def card_deck():
 def draw_card(deck):
     return deck.pop()
 
+def card_drawing(card):
+    top_left=chr(9484)
+    horizontal_line=chr(9472)
+    top_right=chr(9488)
+    bottom_left=chr(9492)
+    bottom_right=chr(9496)
+    vertical_line=chr(9474)
+    if card[0]=="D":
+        suit_symbol=chr(0x2666)
+    elif card[0]=="H":
+        suit_symbol=chr(0x2665)
+    elif card[0]=="C":
+        suit_symbol=chr(0x2663)
+    else:
+        suit_symbol=chr(0x2660)
+    print(top_left,horizontal_line,horizontal_line, horizontal_line, top_right,sep="")
+    print(vertical_line,suit_symbol.center(3),vertical_line,sep="")
+    print(vertical_line,card[1].center(3),vertical_line,sep="")
+    print(bottom_left,horizontal_line,horizontal_line, horizontal_line,bottom_right,sep="")
 
 
 def CardValue(CardList):
@@ -60,13 +72,13 @@ def BlackJack():
 
     DealerCards=[draw_card(deck),draw_card(deck)]
     print("Dealers Cards are:")
-    print(DealerCards[0])
+    card_drawing(DealerCards[0])
     time.sleep(1.5)
     PlayerCards=[draw_card(deck),draw_card(deck)]
     print("Your Cards are:")
-    print(PlayerCards[0])
+    card_drawing(PlayerCards[0])
     time.sleep(1.5)
-    print(PlayerCards[1])
+    card_drawing(PlayerCards[1])
     print("The Value of your cards is:", CardValue(PlayerCards))
 
 
@@ -78,9 +90,9 @@ def BlackJack():
 
     if player_blackjack or dealer_blackjack:
         print("Dealer's Second Card is:")
-        print(DealerCards[1])
+        card_drawing(DealerCards[1])
         time.sleep(1)
-        
+
     if player_blackjack and dealer_blackjack:
         print("Both have Blackjacks! Tie!")
         return
@@ -97,10 +109,9 @@ def BlackJack():
             twist_stick_choice=input()
             if twist_stick_choice.upper() in ("T","S"):
                 break
-        # Case 1: Twist, draw 1 more card, may bust, may win, make function
         if twist_stick_choice.upper() == "T":
             PlayerCards.append(draw_card(deck))
-            print(PlayerCards[-1])
+            card_drawing(PlayerCards[-1])
             if CardValue(PlayerCards)>21:
                 print("Bust!")
                 player_bust=True
@@ -117,7 +128,7 @@ def BlackJack():
 
 
     print("Dealer's Second Card is:")
-    print(DealerCards[1])
+    card_drawing(DealerCards[1])
     time.sleep(1)
 
 
@@ -125,7 +136,7 @@ def BlackJack():
         print("The Dealer Draws:")
     while CardValue(DealerCards)<17 and player_bust==False:
         DealerCards.append(draw_card(deck))
-        print(DealerCards[-1])
+        card_drawing(DealerCards[-1])
         if CardValue(DealerCards)>21:
             print("Dealer Bust!")
             dealer_bust=True
@@ -155,7 +166,7 @@ def menu():
         if menu_input=="1":
             BlackJack()
         elif menu_input=="2":
-            sys.exit()
+            return
 
 
 if __name__ == "__main__":
